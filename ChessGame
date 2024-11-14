@@ -1,0 +1,58 @@
+package chinesechess2;
+
+import java.util.Scanner;
+
+public class ChessGame {
+    public static final String RESET = "\u001B[0m";
+    public static final String RED = "\u001B[31m";
+    public static final String CYAN = "\u001B[36m";
+
+    public static void main(String[] args) {
+        ChessBoard board = new ChessBoard();
+        Scanner sc = new Scanner(System.in);
+        board.printBoard();
+
+        boolean isRedTurn = true;
+        int action, row, col;
+        Piece selectedPiece;
+
+        while (true) {
+            // Xác định lượt và hiển thị thông báo
+            if (isRedTurn) System.out.println(RED + "Lượt của Đỏ:" + RESET);
+            else System.out.println(CYAN + "Lượt của Xanh:" + RESET);
+
+            // Lựa chọn hành động: Đi cờ hoặc Thoát
+            System.out.println("Chọn hành động: 1. Đi cờ | 2. Thoát");
+            action = sc.nextInt();
+            if (action == 2) break;  // Thoát khỏi vòng lặp nếu chọn hành động thoát
+
+            // Nhập tọa độ quân cờ muốn di chuyển
+            System.out.println("Chọn quân cờ của bạn (Ví dụ: 0 4): ");
+            row = sc.nextInt();
+            col = sc.nextInt();
+            selectedPiece = board.pieceAt(row, col);
+
+            // Kiểm tra nếu quân cờ hợp lệ và là quân của người chơi trong lượt
+            if (selectedPiece == null || selectedPiece.isRed != isRedTurn) {
+                System.out.println("Quân cờ không hợp lệ. Vui lòng chọn lại!");
+                continue;
+            }
+
+            // Nhập tọa độ mới để di chuyển quân cờ
+            System.out.println("Chọn nước đi (Ví dụ: 1 4):");
+            int toRow = sc.nextInt();
+            int toCol = sc.nextInt();
+
+            // Kiểm tra nếu nước đi hợp lệ, sau đó cập nhật bàn cờ và chuyển lượt
+            if (selectedPiece.isValidMove(toRow, toCol, board)) {
+                board.movePiece(selectedPiece, toRow, toCol);
+                board.recordMove(board.toString());
+                board.printBoard();
+                isRedTurn = !isRedTurn;
+            } else {
+                System.out.println("Nước đi không hợp lệ. Vui lòng thử lại!");
+            }
+        }
+        sc.close();
+    }
+}
